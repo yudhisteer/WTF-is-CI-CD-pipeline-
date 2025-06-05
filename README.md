@@ -3,9 +3,19 @@
 
 ## Table of Contents
 1. Why Package?
-    - Package vs Module vs Sub-Package vs Distribution Package
-2. CI
-3. CD
+    - WTF is package/module/sub-package/distribution package?
+2. Importing Modules in a Hacky Way
+    - PYTHONPATH
+    - sys.path.insert(0, path)
+3. Building a Distribution Package
+    - sdist and wheel formats
+    - Packaging with setup.py
+    - From setup.py to setup.cfg
+    - From setup.cfg to pyproject.toml
+    - Packaging datafiles with/out MANIFEST.in
+4. CI
+5. CD
+
 
 ---------------------------------------
 
@@ -20,13 +30,23 @@ It allows other developers to import the package and use its functions, classes,
 3. Reproducibility
 We can use the same package in different system/machines and get the same results.
 
+
+
+
+### 1.1 WTF is package/module/sub-package/distribution package?
+
 A module is a single piece of an import path in Python. It can be a single file or a directory. 
 
+A package is a collection of modules.
 
-### 1.1 Package vs Module vs Sub-Package vs Distribution Package
+A sub-package is a sub-directory of a package.
 
+A distribution package is a package that is distributed to other developers.
 
-## PYTHONPATH
+## 2. Importing Modules in a Hacky Way
+
+### 2.1 PYTHONPATH
+
 `PYTHONPATH` is an environment variable in Python that specifies additional directories for the interpreter to search for modules and packages. This helps Python find code that isn't in the standard library or current directory.
 
 Let's see when and why to use it. Suppose we have the dir structure below:
@@ -87,6 +107,8 @@ if __name__ == "__main__":
     print_module("Hello from module1.py") 
 ```
 
+### 2.2 sys.path.insert(0, path)
+
 Another way if we do not want to add the path to the `PYTHONPATH` environment variable is to use `sys.path.insert(0, path)` in the `sub_module.py`.
 
 ```python
@@ -101,17 +123,23 @@ if __name__ == "__main__":
 This adds `/home/yoyo/CI-CD-Pipeline` to the start of Python's module search path (`sys.path`), allowing us to import `print_module` from `package_folder.folder.module1` even though `sub_module.py` is in a subdirectory. This bypasses normal import restrictions due to directory structure.
 
 
-### 1.2 Distribution Package
+---------------------------------------
 
+## 3. Building a Distribution Package
 
+### 3.1 sdist and wheel formats
 
+### 3.2 Packaging with setup.py
 
+### 3.3 From setup.py to setup.cfg
 
+### 3.4 From setup.cfg to pyproject.toml
 
-### Key Concepts to Understand
-
+### 3.5 Packaging datafiles with/out MANIFEST.in
 
 
 ---------------------------------------
 
-## 2. CI
+## 4. CI
+
+## 5. CD
