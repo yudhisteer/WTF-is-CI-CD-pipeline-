@@ -20,6 +20,7 @@
 ---------------------------------------
 
 ## 1. Why Package?
+Python packaging is a fundamental concept that enables developers to organize, distribute, and reuse code effectively. It provides a structured way to share `functionality` across projects and teams, ensuring that code is `maintainable`, `reproducible`, and `accessible`. Understanding how to package Python code is essential for any developer looking to contribute to the Python ecosystem or build robust applications.
 
 1. Distributable
 In basic terms, a package is a `distributable` set of Python code along with its metadata that can be reused by other developers.
@@ -31,17 +32,111 @@ It allows other developers to import the package and use its functions, classes,
 We can use the same package in different system/machines and get the same results.
 
 
-
-
 ### 1.1 WTF is package/module/sub-package/distribution package?
+Before diving into the technical details, let's clarify some fundamental concepts in Python packaging. Understanding the difference between `modules`, `packages`, `sub-packages`, and `distribution packages` is crucial for organizing and distributing your Python code effectively. These concepts form the foundation of Python's modular architecture and are essential for building maintainable and reusable software.
 
-A module is a single piece of an import path in Python. It can be a single file or a directory. 
 
-A package is a collection of modules.
+### 1.1.1 Module
 
-A sub-package is a sub-directory of a package.
+A module in Python is a `self-contained unit of code` that can be `imported` and used in other Python programs. It can exist as either a single `.py` file or a directory containing multiple `.py` files. Modules encapsulate related functionality through `classes, functions, and variables`, making code more organized and reusable. They serve as the fundamental building blocks for structuring Python applications and sharing code between projects.
 
-A distribution package is a package that is distributed to other developers.
+For example, consider a module named data_processing.py that contains functions to clean and transform data, such as `remove_duplicates`, `handle_missing_values`, and `normalize_numerical_columns`. You can import and use these functions in other Python scripts to process your datasets.
+
+```python
+# data_processing.py
+
+def remove_duplicates(data):
+    return list(set(data))
+
+def handle_missing_values(data):
+    return data.fillna(0)
+
+def normalize_numerical_columns(data):
+    return data.apply(lambda x: (x - x.mean()) / x.std())
+
+def process_data(data):
+    data = remove_duplicates(data)
+    data = handle_missing_values(data)
+    data = normalize_numerical_columns(data)
+    return data
+```
+
+### 1.1.2 Package
+
+A Python package is a directory containing `multiple Python modules organized together`. It is identified by the presence of an `__init__.py` file (which can be empty) that marks the directory as a package. This structure allows related modules to be grouped logically and imported as a single unit. 
+
+For example, consider a package named `data_processing` that contains multiple modules for data cleaning, machine learning, and visualization. You can import and use these modules in other Python scripts to process your datasets. `data_cleaning.py`, `machine_learning.py`, and `visualization.py` are modules in this example.
+
+```python
+# data_processing
+
+data_processing/
+├── __init__.py
+├── data_cleaning.py
+├── machine_learning.py
+└── visualization.py
+```
+
+We can import functions from the modules in the package `data_processing` in other Python scripts by using the following syntax:
+
+```python
+from data_processing.data_cleaning import remove_duplicates
+from data_processing.machine_learning import train_model
+from data_processing.visualization import plot_data
+```
+
+### 1.1.3 Sub-Package
+
+A sub-package is a package that is nested within another package. It follows the same structure as a regular package, containing an `__init__.py` file and potentially other modules or sub-packages. Sub-packages help organize code hierarchically, allowing for more complex and structured applications.
+
+For example, consider a comprehensive `machine_learning` package that contains sub-packages for different categories of algorithms:
+
+```python
+# machine_learning package structure
+
+machine_learning/
+├── __init__.py
+├── utils.py
+├── supervised/
+│   ├── __init__.py
+│   ├── linear_models.py
+│   ├── tree_models.py
+│   └── ensemble/
+│       ├── __init__.py
+│       ├── random_forest.py
+│       └── gradient_boosting.py
+├── unsupervised/
+│   ├── __init__.py
+│   ├── clustering.py
+│   └── dimensionality_reduction.py
+└── preprocessing/
+    ├── __init__.py
+    ├── scalers.py
+    └── encoders.py
+```
+
+In this structure:
+- `supervised/`, `unsupervised/`, and `preprocessing/` are **sub-packages** of the main `machine_learning` package
+- `ensemble/` is a **sub-package** of the `supervised` sub-package (nested sub-package)
+- Each sub-package has its own `__init__.py` file and can contain modules or additional sub-packages
+
+You can import from these sub-packages like this:
+
+```python
+from machine_learning.supervised.linear_models import LinearRegression
+from machine_learning.supervised.ensemble.random_forest import RandomForestClassifier
+from machine_learning.unsupervised.clustering import KMeans
+from machine_learning.preprocessing.scalers import StandardScaler
+```
+
+### 1.1.4 Distribution Package
+
+A distribution package is a `versioned archive file` that contains a `Python package` along with its `metadata`, `dependencies`, and `installation instructions`. It's what gets uploaded to `PyPI` and installed via `pip install`. Note that `pip` is the package manager for Python. Other popular package managers for Python are `conda` and `poetry` and the one I like `uv`.
+
+Distribution packages come in different formats like `source distributions (sdist)` and `wheels` which we will see in a moment. Some well-known examples of distribution packages are `numpy`, `fast-api`, and `pandas`, etc.
+
+
+------------------------------------------------------------------------------------------------
 
 ## 2. Importing Modules in a Hacky Way
 
