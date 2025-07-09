@@ -314,7 +314,7 @@ AFTER inserting:
 ```
 
 
-### Python's Search Path vs PYTHONPATH
+#### Python's Search Path vs PYTHONPATH
 
 #### sys.path
 - **What it is**: A list inside Python containing all directories Python will search
@@ -344,7 +344,7 @@ print(sys.path)
 ```
 
 
-## Key Differences
+#### Key Differences
 
 | Aspect | PYTHONPATH | sys.path |
 |--------|------------|----------|
@@ -367,11 +367,6 @@ print('Path added successfully')
 print(sys.path[:3])
 "
 ```
-
-#### When to Use Which
-
-- **PYTHONPATH**: When you want the path available for multiple scripts/sessions
-- **sys.path.insert()**: When you need the path only for one specific script
 
 ### 2.3 Why These Approaches are "Hacky" and Should Be Avoided
 
@@ -402,7 +397,27 @@ from module1 import print_module  # What if module1 needs other libraries?
 ```
 **Problem**: There's no way to specify what dependencies `module1` needs. If it requires `numpy` or `pandas`, users have to figure that out themselves.
 
-### The Better Way: Distribution Packages
+What NOT to do:
+
+**Hacky Way (Current):**
+```bash
+# Instructions to run your code:
+# 1. Clone the repository
+# 2. Set PYTHONPATH=/home/yoyo/CI-CD-Pipeline
+# 3. Make sure you're in the right directory
+# 4. Cross your fingers and run: python package_folder/folder/sub_package/sub_module.py
+```
+
+What to do:
+
+**Professional Way (Distribution Package):**
+```bash
+# Instructions to run your code:
+pip install my-package
+python -c "from my_package.sub_package import sub_module; sub_module.run()"
+```
+
+#### The Better Way: Distribution Packages
 
 Instead of manipulating paths, the professional approach is to create a proper package structure which we will see in the next section:
 
@@ -430,37 +445,82 @@ my_package/
 └── README.md
 ```
 
-What NOT to do:
-
-**Hacky Way (Current):**
-```bash
-# Instructions to run your code:
-# 1. Clone the repository
-# 2. Set PYTHONPATH=/home/yoyo/CI-CD-Pipeline
-# 3. Make sure you're in the right directory
-# 4. Cross your fingers and run: python package_folder/folder/sub_package/sub_module.py
-```
-
-What to do:
-
-**Professional Way (Distribution Package):**
-```bash
-# Instructions to run your code:
-pip install my-package
-python -c "from my_package.sub_package import sub_module; sub_module.run()"
-```
-
 In the next section, we'll learn how to build proper distribution packages that solve all these problems elegantly!
-
-
 
 ---------------------------------------
 
 ## 3. Building a Distribution Package
+[python.org](https://packaging.python.org/en/latest/glossary/#term-Distribution-Package) describes a distribution package as *"A versioned archive file that contains Python packages, modules, and other resource files that are used to distribute a Release. The archive file is what an end-user will download from the internet and install."* I cannot explain it better.
 
-### 3.1 sdist and wheel formats
 
-### 3.2 Packaging with setup.py
+### 3.1 Packaging with setup.py
+
+Back in the 1990s, Python’s standard library included a module called `Distutils`, which provided tools for creating distribution packages. However, Distutils had many shortcomings—most notably, it was difficult and unintuitive to use.
+
+To address these issues, a third-party project called `setuptools` was created. Setuptools acted as a more user-friendly wrapper around Distutils, and over time, it became the de facto standard for building and distributing Python packages. Even today, setuptools remains the most widely supported tool for this purpose, though there are now several modern alternatives (which we’ll discuss later).
+
+In this section, we’ll look at the traditional approach to packaging: using setuptools with a `setup.py` file to create a distribution package.
+
+```python
+# setup.py
+
+from setuptools import setup
+
+setup(
+    name="packaging", # name of the package
+    version="0.0.0", # semantic versioning
+    author="Yoyo", # name of the author
+    author_email="yoyo@example.com", # email of the author
+    description="A sample Python package", # description of the package
+    long_description=open("README.md").read(), # long description of the package
+    license="MIT", # license of the package
+)
+```
+
+The `setup.py` is a CLI tool such that the `setup()` function picks up CLI arguments that we pass into the Python commands. Therefore, we can use:
+
+```bash
+python setup.py --help
+```
+
+To build the package, we can use:
+
+```bash
+python setup.py build sdist
+```
+
+Bu running this command we create a `dist` folder with the following structure:
+
+```bash
+dist/
+└── packaging-0.0.0.tar.gz
+```
+
+The `tar.gz` file is the `source distribution`(sdist), that is an installable version of our code which means we can install it using pip as such:
+
+```bash
+pip install ./dist/packaging-0.0.0.tar.gz
+```
+
+We can verify by using:
+
+```bash
+pip list
+```
+
+Note we will also have a copy of our code in the `site-packages` folder inside our virtual environment. Therefore, we can import the `print_module` function from `package_folder.folder.module1` directly as such without having to use the `sys.path` manipulation or `PYTHONPATH` environment variable.
+
+```python
+# In sub_package/sub_module.py
+
+from package_folder.folder.module1 import print_module
+
+print_module("Hello from module1.py") # This works!
+```
+
+
+
+### 3.2 sdist and wheel formats
 
 ### 3.3 From setup.py to setup.cfg
 
