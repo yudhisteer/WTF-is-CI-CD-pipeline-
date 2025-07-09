@@ -470,6 +470,7 @@ setup(
     name="packaging", # name of the package
     version="0.0.0", # semantic versioning
     author="Yoyo", # name of the author
+    packages=["package_folder"], # packages to include in the distribution
     author_email="yoyo@example.com", # email of the author
     description="A sample Python package", # description of the package
     long_description=open("README.md").read(), # long description of the package
@@ -517,6 +518,28 @@ from package_folder.folder.module1 import print_module
 
 print_module("Hello from module1.py") # This works!
 ```
+
+We can use the `find_packages()` function to find all packages in the current directory. However, it is important that we have a `__init__.py` file in the package directory or in the sub-package directory or else the `find_packages()` function will not find the necessary package.
+
+```python
+# setup.py
+
+from setuptools import setup, find_packages
+
+setup(
+    ...
+    packages=find_packages(), # find all packages in the current directory
+    ...
+)
+```
+
+It may seem like a lot of effort just to get a simple import statement working, but there's a big benefit: once you've built your distribution package, you can upload it to `PyPI` (I'll show you how later). Then, when someone runs `pip install <your-package-name>`, they're actually downloading that `tar.gz` file and installing it into their own virtual environment—ready to import and use, no manual path hacks required!
+
+Suppose we make some changes in the `package_folder/folder/module1.py` file and run the python file. Will we see the changes? The answer is no because we are still using the built and installed distribution package in the `site-packages` folder in our virtual environment. But we cannot build and install the package everytime we make some changed. Instead we can do:
+
+Use `pip install -e .` during development when you're actively working on the code where `e` stands for `editable`.
+
+Use `pip install .` when you want to install a stable version or for production.
 
 
 
