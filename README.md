@@ -1,4 +1,6 @@
-# CI-CD-Pipeline
+# What the F@*#K is a CI/CD Pipeline?
+
+Thanks to Eric Riddoch for the inspiration to write this project. Note: ChatGPT helped me write this README. Just kidding! I used Claude and Grok.
 
 [under-construction]
 
@@ -21,11 +23,13 @@
 ---------------------------------------
 
 ## 1. Why Package?
-Python packaging enables developers to `organize`, `distribute`, and `reuse code` effectively. It provides a structured way to share `functionality` across projects and teams, ensuring that code is `maintainable`, `reproducible`, and `accessible`. Understanding how to package Python code is essential for any developer looking to build robust applications.
+Have you every written a piece of code on your computer only to find out later that you cannot run it on your friend's computer or you cannot run it on your own computer after a few months because some dependencies changed? Well, that's why we package!
+Python packaging enables developers to `organize`, `distribute`, and `reuse code` effectively. Pause here and ponder about these 3 words I highlighted.
+It provides a structured way to share `functionality` across projects and teams, ensuring that code is `maintainable`, `reproducible`, and `accessible`.
 
 **Distributable:**
 
-In basic terms, a package is a `distributable` set of Python code along with its metadata that can be reused by other developers. 
+In basic terms, a package is a `distributable` set of Python code along with its metadata that can be reused by other developers. Voila!
 
 **Importable:**
 
@@ -42,7 +46,8 @@ Before diving into the technical details, let's clarify some fundamental concept
 
 ### 1.1.1 Module
 
-A module in Python is a `self-contained unit of code` that can be `imported` and used in other Python programs. It can exist as either a single `.py` file or a directory containing multiple `.py` files. Modules encapsulate related functionality through `classes, functions, and variables`, making code more organized and reusable. They serve as the fundamental building blocks for structuring Python applications and sharing code between projects.
+A module in Python is a `self-contained unit of code` that can be `imported` and used in other Python programs. It can exist as either a single `.py` file or a directory containing multiple `.py` files. 
+Modules encapsulate related functionality through `classes, functions, and variables`, making code more organized and reusable. They serve as the fundamental building blocks for structuring Python applications and sharing code between projects.
 
 For example, consider a module named data_processing.py that contains functions to clean and transform data, such as `remove_duplicates`, `handle_missing_values`, and `normalize_numerical_columns`. You can import and use these functions in other Python scripts to process your datasets.
 
@@ -91,7 +96,8 @@ from data_processing.visualization import plot_data
 
 ### 1.1.3 Sub-Package
 
-A sub-package is a package that is nested within another package. It follows the same structure as a regular package, containing an `__init__.py` file and potentially other modules or sub-packages. Sub-packages help organize code hierarchically, allowing for more complex and structured applications.
+A sub-package is a package that is nested within another package - who thought? It follows the same structure as a regular package, containing an `__init__.py` file and potentially other modules or sub-packages. 
+Sub-packages help organize code hierarchically, allowing for more complex and structured applications.
 
 For example, consider a comprehensive `machine_learning` package that contains sub-packages for different categories of algorithms:
 
@@ -276,7 +282,7 @@ Python searches in this order:
 Key Takeaway: `PYTHONPATH` helps Python find modules that aren't in the standard locations, especially when dealing with complex project structures where you need to import from different directory levels.
 
 
-### 2.2 sys.path.insert(0, path)
+### 2.2 Python's Search Path
 
 Instead of setting `PYTHONPATH`, you can modify Python's search path directly.
 
@@ -336,8 +342,6 @@ print(sys.path)
     '/usr/lib/python3.11/site-packages'  # Installed packages
 ]
 ```
-
-
 
 
 ## Key Differences
@@ -426,14 +430,7 @@ my_package/
 └── README.md
 ```
 
-**Benefits:**
-- ✅ **Portable**: Works on any machine after `pip install`
-- ✅ **Dependency Management**: Automatically installs required libraries
-- ✅ **Version Control**: Can specify exact versions of dependencies
-- ✅ **Professional**: Standard way to distribute Python code
-- ✅ **No Path Manipulation**: Python finds modules automatically
-
-### Real Impact:
+What NOT to do:
 
 **Hacky Way (Current):**
 ```bash
@@ -444,6 +441,8 @@ my_package/
 # 4. Cross your fingers and run: python package_folder/folder/sub_package/sub_module.py
 ```
 
+What to do:
+
 **Professional Way (Distribution Package):**
 ```bash
 # Instructions to run your code:
@@ -451,36 +450,7 @@ pip install my-package
 python -c "from my_package.sub_package import sub_module; sub_module.run()"
 ```
 
-### Summary
-
-The PYTHONPATH and sys.path approaches we've demonstrated are useful for:
-- 🟡 **Quick prototyping and testing**
-- 🟡 **Understanding Python's import system**
-- 🟡 **Debugging import issues**
-
-But they should **never** be used for:
-- 🔴 **Production applications**
-- 🔴 **Shared codebases**
-- 🔴 **Distributed software**
-- 🔴 **Professional projects**
-
 In the next section, we'll learn how to build proper distribution packages that solve all these problems elegantly!
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
