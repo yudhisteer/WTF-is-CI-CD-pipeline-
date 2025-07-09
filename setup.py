@@ -9,4 +9,5 @@ setup(
     description="A sample Python package", # description of the package
     long_description=open("README.md").read(), # long description of the package
     license="MIT", # license of the package
+    install_requires=["numpy"], # dependencies of the package
 )

@@ -467,14 +467,15 @@ In this section, we’ll look at the traditional approach to packaging: using se
 from setuptools import setup
 
 setup(
-    name="packaging", # name of the package
+    name="yoyo-package", # name of the package
     version="0.0.0", # semantic versioning
     author="Yoyo", # name of the author
-    packages=["package_folder"], # packages to include in the distribution
+    packages=find_packages(), # find all packages in the current directory
     author_email="yoyo@example.com", # email of the author
     description="A sample Python package", # description of the package
     long_description=open("README.md").read(), # long description of the package
     license="MIT", # license of the package
+    install_requires=[numpy], # dependencies of the package
 )
 ```
 
@@ -544,6 +545,91 @@ Use `pip install .` when you want to install a stable version or for production.
 
 
 ### 3.2 sdist and wheel formats
+
+A `source distribution (sdist)` is essentially a zipped folder containing our source code. It is a subset or a curated subset of our source code - it includes necessary files, excludes build artifacts and other unnecessary files. If we unzip the `tar.gz` file in our `dist` directory, we will have our `package`(whatever name we gave to our package) folder but also the `setup.py` file. This is because the sdist format requires the end user to execute the `setup.py` file when installing their package. This can lead to several issues:
+
+1. **System Assumptions:** The `setup.py` might assume the user has certain tools or compilers installed (for example, for C, C++, or Rust extensions). If these are missing, installation will fail.
+
+2. **Slow Installations:** If the `setup.py` performs time-consuming tasks (like compiling code), the installation process will be slow for the users.
+
+3. **Security Risks:** Since arbitrary code in `setup.py` is executed during installation, users are exposed to potential security vulnerabilities if the package contains malicious code.
+
+Because of these reasons, relying on `setup.py` execution during installation is discouraged in favor of more modern, secure, and reproducible packaging formats like `wheels` and `declarative configuration files`.
+
+Instead, we use a `binary distribution format`, which means the package is already built and contains precompiled files. The most common binary distribution format in Python is called a `wheel`.
+
+We first need to install the `wheel` package:
+
+```bash
+# Install wheel
+pip install wheel
+```
+
+We can then build the wheel:
+
+```bash
+# Create a wheel
+python setup.py bdist_wheel
+```
+
+Similarly to the `sdist` format, we can install the wheel as such:
+
+```bash
+# Install the wheel
+pip install ./dist/yoyo-package-0.0.0-py3-none-any.whl
+```
+
+A wheel file is named using the pattern `{dist}-{version}(-{build})?-{python}-{abi}-{platform}.whl` where:
+
+- `dist`: the name of the distribution, which is `yoyo-package` in our case.
+- `version`: the version of the package, which is `0.0.0` in our case.
+- `build`: the build number, which is `0` in our case.
+- `python`: the Python version, which is `3` in our case.
+- `abi`: the Application Binary Interface, which is `none` in our case.
+- `platform`: the platform, which is `any` in our case.
+
+#### Platform Dependency
+Wheel files are architecture-specific, meaning each wheel only works on certain processor architectures and operating systems. This creates a limitation where a single wheel file cannot serve all users across different platforms.
+
+#### Precompiled Binaries
+The reason for this platform specificity lies in the wheel's contents: these files contain precompiled binary code. For example, when installing NumPy from a wheel file, you're downloading pre-built binaries rather than source code that needs compilation.
+
+#### Technical Structure
+Wheel files are essentially ZIP archives containing the precompiled components. This means installation is significantly faster since users don't need to:
+- Execute setup.py files
+- Compile source code using GCC
+- Wait for lengthy build processes
+
+#### Advantages for End Users
+By shipping with precompiled binaries, wheel files eliminate several issues associated with source distributions:
+- Speed: Installation is much faster
+- Reliability: No assumptions about the user's build environment
+- Security: No need to execute arbitrary setup.py code during installation
+
+#### Challenges for Package Maintainers
+The trade-off is increased complexity for package publishers, who must:
+- Build separate wheels for different architectures (ARM, x86, etc.)
+- Create platform-specific versions (various Linux distributions, Windows, macOS)
+- Maintain compatibility across multiple Python versions (3.7, 3.8, 3.9, etc.)
+
+#### Pure Python Packages
+If your package contains only pure Python code (no compiled extensions), this complexity disappears. You can build a single universal wheel that works across all platforms.
+
+#### Development Workflow
+For packages requiring compilation:
+- Build the wheel using pip install wheel and setup.py
+- Distribute the resulting wheel file
+- End users install directly without ever running setup.py
+- Only rebuild wheels for new version releases
+
+This approach significantly improves the user experience by shifting the compilation burden from installation time to build time.
+
+
+
+
+
+
+
 
 ### 3.3 From setup.py to setup.cfg
 
